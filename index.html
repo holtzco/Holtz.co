@@ -1,0 +1,98 @@
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>holtz.co - Loja Oficial</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 0; background: #f4f4f4; }
+        header { background: #222; color: white; padding: 20px; text-align: center; }
+        .container { padding: 20px; max-width: 800px; margin: auto; background: white; }
+        .produto { border-bottom: 1px solid #ccc; padding: 10px 0; }
+        .produto h2 { margin: 0 0 5px; }
+        .produto button { margin-top: 10px; }
+        #carrinho { margin-top: 30px; background: #eee; padding: 15px; border-radius: 5px; }
+        footer { text-align: center; padding: 20px; font-size: 0.8em; color: #555; }
+        .qr-container { margin-top: 20px; text-align: center; }
+    </style>
+</head>
+<body>
+<header>
+    <h1>holtz.co</h1>
+    <p>Moda feminina com envio rápido e pagamento via Pix</p>
+</header>
+<div class="container">
+    <div class="produto">
+        <h2>Conjunto Feminino 3 Peças</h2>
+        <p>Tomara que caia + Saia + Túnica – R$89,90</p>
+        <button onclick="adicionar('Conjunto Feminino 3 Peças', 89.90)">Adicionar ao Carrinho</button>
+    </div>
+    <div class="produto">
+        <h2>Macacão Cargo Alfaiataria</h2>
+        <p>Estilo Sofisticado – R$119,90</p>
+        <button onclick="adicionar('Macacão Cargo Alfaiataria', 119.90)">Adicionar ao Carrinho</button>
+    </div>
+    <div class="produto">
+        <h2>Look Outono/Inverno</h2>
+        <p>Blusa Xadrez + Short com Cinto – R$99,90</p>
+        <button onclick="adicionar('Look Outono/Inverno', 99.90)">Adicionar ao Carrinho</button>
+    </div>
+
+    <div id="carrinho">
+        <h2>Carrinho</h2>
+        <ul id="lista-carrinho"></ul>
+        <p id="total">Total: R$ 0.00</p>
+        <h3>Finalizar Pedido</h3>
+        <form id="formulario-pedido" onsubmit="gerarQRCode(); return false;">
+            <input id="nome" type="text" placeholder="Nome completo" required><br><br>
+            <input id="telefone" type="text" placeholder="Telefone" required><br><br>
+            <input id="endereco" type="text" placeholder="Endereço completo" required><br><br>
+            <textarea id="obs" placeholder="Observações (opcional)"></textarea><br><br>
+            <button type="submit">Gerar QR Code Pix</button>
+        </form>
+        <div class="qr-container">
+            <h3>QR Code Pix:</h3>
+            <canvas id="qr-code"></canvas>
+            <p id="codigo-pix"></p>
+        </div>
+    </div>
+</div>
+<footer>
+    © 2025 holtz.co - Pagamento via PIX para Kamille Lima Holtz (Dourados)
+</footer>
+<script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+<script>
+    let carrinho = [];
+    function adicionar(produto, preco) {
+        carrinho.push({ produto, preco });
+        atualizarCarrinho();
+    }
+    function atualizarCarrinho() {
+        let lista = document.getElementById('lista-carrinho');
+        lista.innerHTML = '';
+        let total = 0;
+        carrinho.forEach(item => {
+            let li = document.createElement('li');
+            li.textContent = item.produto + ' - R$ ' + item.preco.toFixed(2);
+            lista.appendChild(li);
+            total += item.preco;
+        });
+        document.getElementById('total').textContent = 'Total: R$ ' + total.toFixed(2);
+    }
+
+    function gerarQRCode() {
+        const total = carrinho.reduce((sum, item) => sum + item.preco, 0).toFixed(2);
+        const pixKey = "67984223671";
+        const nome = "Kamille Lima Holtz";
+        const cidade = "Dourados";
+        const payload = `00020126360014BR.GOV.BCB.PIX0111${pixKey}520400005303986540${total.replace('.', '')}5802BR5913${nome}6009${cidade}62100506Pedido6304`;
+        document.getElementById('codigo-pix').textContent = payload;
+        QRCode.toCanvas(document.getElementById('qr-code'), payload, function (error) {
+            if (error) console.error(error);
+        });
+        alert("QR Code gerado! Escaneie com seu app de banco para pagar.");
+    }
+</script>
+</body>
+</html>
